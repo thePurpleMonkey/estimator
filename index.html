@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>PDX Pride Drywall Project Estimator</title>
+
+	<link href="default.css" rel="stylesheet">
+
+	<!-- Boostrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+</head>
+<body>
+	<div class="container">
+    <!-- #region Navbar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Estimator</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <div class="navbar-nav">
+            <a id="settings-link" class="nav-link" href="#">Settings</a>
+            <!-- <a class="nav-link" href="#">Pricing</a>
+            <a class="nav-link disabled">Disabled</a> -->
+          </div>
+        </div>
+      </div>
+    </nav>
+    <!-- #endregion -->
+
+		<form>
+			<div class="row">
+				<div id="revenue-container" class="col-12">
+					<h3 for="revenue-input">Project Revenue</h3>
+					<div class="input-group">
+						<span class="input-group-text">$</span>
+						<input type="number" id="revenue-input" class="form-control" aria-describedby="revenue-label">
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+
+				<div id="materials-container" class="section-group col-md-6 col-sm-12 col-xs-12">
+					<h3>Materials</h3>
+					<div id="materials-list" class="row">
+						<div class="row">
+							<div class="col-md-6 col-sm-12 col-12">
+								<input type="text" placeholder="Name" class="form-control material-name">
+							</div>
+							<div class="col-md-2 col-sm-4 col-4">
+								<input type="number" min="0" class="form-control material-quantity" value="1">
+							</div>
+							<div class="col-md-2 col-sm-4 col-4">
+								<input type="number" min="0" class="form-control material-cost">
+							</div>
+							<div class="col-md-2 material-total-parent col-sm-4 col-4">
+								<!-- <input type="number" min="0" class="form-control material-total" readonly disabled> -->
+								<span class="material-total">$0.00</span>
+							</div>
+						</div>
+					</div>
+					<div class="flex-fill">
+						<!-- This is a blank div just to place the following div at the bottom of the parent div -->
+					</div>
+					<div id="materials-total-container" class="row">
+						<div class="col-10">Total:</div>
+						<div id="materials-cost" class="col-2">$0.00</div>
+					</div>
+				</div>
+	
+				<div id="hours-container" class="section-group col-md-3 col-sm-6 col-xs-6">
+					<h3>Hours</h3>
+					<label id="hours-label">Hours</label>
+					<div class="input-group">
+						<input type="number" id="hours-input" class="form-control" aria-describedby="hours-label">
+					</div>
+					<label id="hourly-rate-label">Hourly rate</label>
+					<div class="input-group">
+						<span class="input-group-text">$</span>
+						<input type="number" id="hourly-rate-input" class="form-control" aria-describedby="hourly-rate-label">
+					</div>
+					<label id="total-labor-label">Total labor cost</label>
+					<div class="input-group">
+						<span class="input-group-text">$</span>
+						<input type="number" id="labor-input" class="form-control" aria-describedby="total-labor-label" disabled>
+					</div>
+				</div>
+					
+				<div id="tax-container" class="section-group col-md-3 col-sm-6 col-xs-6">
+					<h3>Tax</h3>
+					<div class="input-group">
+						<input type="number" id="tax-input" class="form-control" aria-describedby="tax-label">
+						<span class="input-group-text">%</span>
+					</div>
+					
+					<div>
+						Total tax withheld:
+						$<span id="tax-withheld">0.00</span>
+					</div>
+				</div>
+			</div>
+		</form>
+
+		<hr>
+		
+		<div class="row">
+			<div id="profit-container" class="section-group col-12">
+				<h3>Profit</h3>
+				$<span id="profit">0.00</span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12 text-end">
+				<button id="clear-button" type="button" class="btn btn-outline-secondary">Clear Form</button>
+				<button id="invoice-button" type="button" class="btn btn-primary">Create Invoice</button>
+			</div>
+		</div>
+	</div>
+
+  <!-- #region Modals -->
+  <div class="modal fade" id="configurationModal" tabindex="-1" aria-labelledby="configurationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="configurationModalLabel">Configuration</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <form id="create_collection_form">
+            <label for="default-tax-rate" class="col-form-label">Default tax rate:</label>
+            <div class="input-group">
+              <input type="number" id="default-tax-rate" class="form-control">
+              <span class="input-group-text">%</span>
+            </div>
+            <div class="form-group">
+              <label for="default-hourly-rate" class="col-form-label">Default hourly rate:</label>
+              <input type="number" class="form-control" id="default-hourly-rate">
+            </div>
+          </form>
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button id="configuration-save-button" type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- #endregion -->
+
+	<!-- Scripts -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.6.1.js"></script>
+	<script src="invoice.js"></script>
+</body>
+</html>
