@@ -10,8 +10,8 @@ $(function() {
 	setDefaults();
 	$("input").change(recalculateProfit);
 
-	$(".material-quantity").focus(() => {
-		this.select();
+	$(".material-quantity").focus(function() {
+		$(this).select();
 	});
 
 	$(".material-name").keyup(() => {
@@ -20,13 +20,15 @@ $(function() {
 		}
 	});
 
-	$("#clear-button").click(clearForm);
 
 	$("#settings-link").click(() => {
 		$("#configurationModal").modal("show");
 	})
 
+	// Add button click handlers
+	$("#clear-button").click(clearForm);
 	$("#configuration-save-button").click(saveNewConfigs);
+	$("#invoice-button").click(serializeData);
 
 	$("#revenue-input").focus();
 });
@@ -39,7 +41,7 @@ function checkForEmptyMaterial() {
 			result = false;
 			return false;
 		}
-	})
+	});
 
 	return result;
 }
@@ -65,8 +67,8 @@ function addNewMaterial() {
 		type: "number",
 		min: 0,
 		value: 1
-	}).change(recalculateProfit)).focus(() => {
-		this.select();
+	}).change(recalculateProfit)).focus(function() {
+		$(this).select();
 	});
 	row.append(div);
 
@@ -207,4 +209,33 @@ function saveNewConfigs() {
 	recalculateProfit();
 
 	$("#configurationModal").modal("hide");
+}
+
+function serializeData() {
+	let result = new Object();
+	result.materials = [];
+
+	// Serialize materials
+	$("#materials-list").children().each((index, element) => {
+		let material = new Object();
+
+		material.name = $(element).find(".material-name").val();
+		material.quantity = $(element).find(".material-quantity").val();
+		material.unitCost = $(element).find(".material-cost").val();
+		material.totalCost = $(element).find(".material-total").text().slice(1);
+
+		console.log(material);
+
+		result.materials.push(material);
+	});
+
+	result.total = $("#revenue-input").val();
+	// result.hourlyRate = $("#hourly-rate-input").val();
+	result.laborCost = $("#labor-input").val();
+	result.materialsCost = calculateMaterialsCost();
+
+	console.log("Invoice data:");
+	console.log(result);
+	sessionStorage.setItem("invoiceData", JSON.stringify(result));
+	window.location = "/draft_invoice.html"
 }
