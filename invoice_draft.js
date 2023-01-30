@@ -8,6 +8,7 @@ var localInvoicePresent = false;
 const noSavedInvoiceToast = new bootstrap.Toast(document.getElementById("no-saved-invoice-warning"));
 const localInvoiceToast = new bootstrap.Toast(document.getElementById("local-storage-toast"));
 const sessionInvoiceToast = new bootstrap.Toast(document.getElementById("session-storage-toast"));
+const savedInvoiceToast = new bootstrap.Toast(document.getElementById("saved-toast"));
 
 $(function() {
 	checkForSavedInvoices();
@@ -131,6 +132,8 @@ function saveInvoice() {
 	localStorage.setItem("invoiceData", JSON.stringify(data));
 	sessionStorage.removeItem("invoiceData"); // Saved data to local storage, so clear previous data from session storage
 	source = "local"; // Change the source since we moved where the invoice is
+	savedInvoiceToast.show();
+
 }
 
 function printInvoice() {
