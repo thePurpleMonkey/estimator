@@ -38,13 +38,16 @@
 
 		<form>
 			<div class="row">
-				<div class="col-4">
+				<div class="col-3">
 					Date: <input type="date" id="date-input" class="form-control">
 				</div>
-				<div class="col-4 text-center">
+				<div class="col-3 text-center">
 					<span id="ccb">CCB#243459</span>
 				</div>
-				<div class="col-4">
+				<div class="col-3">
+					Total hours: <input type="number" id="hours-input" class="form-control">
+				</div>
+				<div class="col-3">
 					Price Per Hour: <input type="number" id="hourly-input" class="form-control">
 				</div>
 			</div>
@@ -80,11 +83,11 @@
 			</div>
 
 			<div class="row">
-				<div class="col-6">
-					<h2>Materials</h2>
-				</div>
 				<div class="col-3">
 					<h2>Quantity</h2>
+				</div>
+				<div class="col-6">
+					<h2>Materials</h2>
 				</div>
 				<div class="col-3">
 					<h2>Total Cost</h2>
@@ -177,11 +180,31 @@
 			<div class="toast-header">
 				<img src="/img/warning.png" class="rounded me-2 warning-toast-symbol" alt="warning symbol">
 				<strong class="me-auto">Estimator</strong>
-				<small>11 mins ago</small>
+				<!-- <small>11 mins ago</small> -->
 				<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
 			</div>
 			<div class="toast-body">
 				There is no saved invoice data. Start a new invoice here, or go to the <a href="/index.html">estimator</a>.
+			</div>
+		</div>
+
+		<!-- Local Storage toast -->
+		<div id="local-storage-toast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+			<div class="d-flex">
+				<div class="toast-body">
+					Loaded saved invoice.
+				</div>
+				<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+			</div>
+		</div>
+
+		<!-- Session Storage toast -->
+		<div id="session-storage-toast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+			<div class="d-flex">
+				<div class="toast-body">
+					Loaded invoice from estimator.
+				</div>
+				<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
 			</div>
 		</div>
 	</div>

@@ -6,12 +6,15 @@ var localInvoicePresent = false;
 
 
 const noSavedInvoiceToast = new bootstrap.Toast(document.getElementById("no-saved-invoice-warning"));
+const localInvoiceToast = new bootstrap.Toast(document.getElementById("local-storage-toast"));
+const sessionInvoiceToast = new bootstrap.Toast(document.getElementById("session-storage-toast"));
 
 $(function() {
 	checkForSavedInvoices();
 	populateInvoice();
 
 	$("#save-button").click(saveInvoice);
+	$("#print-button").click(printInvoice);
 	$("#discard-button").click(confirmDiscardInvoice);
 	$("#modal-discard-button").click(discardInvoice);
 });
@@ -29,6 +32,7 @@ function populateInvoice() {
 		source = "session";
 		console.log("Loaded invoice data from session storage:");
 		console.log(data);
+		sessionInvoiceToast.show();
 	} else {
 		// Load saved invoice from local storage
 		data = JSON.parse(localStorage.getItem("invoiceData"));
@@ -37,6 +41,7 @@ function populateInvoice() {
 			source = "local";
 			console.log("Loaded invoice data from local storage:");
 			console.log(data);
+			localInvoiceToast.show();
 		} else {
 			// No invoice data found in session or local storage
 			data = new Object();
@@ -57,6 +62,7 @@ function populateInvoice() {
 	} else { 
 		$("#date-input").val(new Date().toISOString().substring(0, 10));
 	}
+	$("#hours-input").val(data.totalHours);
 	$("#hourly-input").val(data.hourlyRate);
 	if (data.company) { $("#company-input").val(data.company); }
 	if (data.customer) { $("#customer-input").val(data.customer); }
@@ -77,21 +83,22 @@ function populateInvoice() {
 
 function addMaterial(name, quantity, totalCost) {
 	let materialDiv = $("<div>").addClass("row");
-	let materialInput = $("<div>").addClass("col-6").append($("<input type='text'>").addClass("form-control col-6 material-name").val(name));
 	let quantityInput = $("<div>").addClass("col-3").append($("<input type='number'>").addClass("form-control col-6 material-quantity").val(quantity));
+	let materialInput = $("<div>").addClass("col-6").append($("<input type='text'>").addClass("form-control col-6 material-name").val(name));
 	let totalCostInput = $("<div>").addClass("col-3").append($("<input type='number'>").addClass("form-control col-6 material-total-cost").val(totalCost));
 	
-	materialDiv.append(materialInput);
 	materialDiv.append(quantityInput);
+	materialDiv.append(materialInput);
 	materialDiv.append(totalCostInput);
 
 	$("#materials-list").append(materialDiv);
 }
 
-function saveInvoice() {
+function serializeInvoice() {
 	let data = new Object();
 
 	data.date = $("#date-input").val();
+	data.totalHours = $("#hours-input").val();
 	data.hourlyRate = $("#hourly-input").val();
 	data.company = $("#company-input").val();
 	data.customer = $("#customer-input").val();
@@ -103,7 +110,8 @@ function saveInvoice() {
 	$("#materials-list").children().each((index, row) => {
 		let material = {
 			name: $(row).find(".material-name").val(),
-			cost: $(row).find(".material-cost").val()
+			quantity: $(row).find(".material-quantity").val(),
+			totalCost: $(row).find(".material-total-cost").val()
 		};
 		data.materials.push(material);
 	});
@@ -111,12 +119,28 @@ function saveInvoice() {
 	data.materialsCost = $("#material-cost-input").val();
 	data.total = $("#invoice-total-input").val();
 
+	return data;
+}
+
+function saveInvoice() {
+	let data = serializeInvoice();
+
 	console.log("Saving invoice:");
 	console.log(data);
 
 	localStorage.setItem("invoiceData", JSON.stringify(data));
 	sessionStorage.removeItem("invoiceData"); // Saved data to local storage, so clear previous data from session storage
 	source = "local"; // Change the source since we moved where the invoice is
+}
+
+function printInvoice() {
+	let invoice = serializeInvoice();
+
+	console.log("Invoice to print:");
+	console.log(invoice);
+
+	sessionStorage.setItem("printInvoiceData", JSON.stringify(invoice));
+	window.location = "/print_invoice.html";
 }
 
 function confirmDiscardInvoice() {

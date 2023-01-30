@@ -230,7 +230,8 @@ function serializeData() {
 	});
 
 	result.total = $("#revenue-input").val();
-	// result.hourlyRate = $("#hourly-rate-input").val();
+	// result.totalHours = $("#hours-input").val();
+	result.hourlyRate = $("#hourly-rate-input").val();
 	result.laborCost = $("#labor-input").val();
 	result.materialsCost = calculateMaterialsCost();
 

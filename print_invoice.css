@@ -1,0 +1,34 @@
+.thick-cell {
+	border: solid 2px purple;
+}
+
+.thick-left-cell {
+	border-top: solid 2px purple;
+	border-left: solid 2px purple;
+}
+
+.thick-right-cell {
+	border-top: solid 2px purple;
+	border-left: solid 2px purple;
+	border-right: solid 2px purple;
+}
+
+.thick-bottom-cell {
+	border: solid 2px purple;
+}
+
+.address {
+	min-height: 6em;
+}
+
+#footer {
+	margin-top: 1em;
+	font-size: small;
+}
+
+@media print {
+	#footer {
+		position: fixed;
+		bottom: 0;
+	}
+}
