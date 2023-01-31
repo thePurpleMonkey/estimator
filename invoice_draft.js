@@ -18,6 +18,11 @@ $(function() {
 	$("#print-button").click(printInvoice);
 	$("#discard-button").click(confirmDiscardInvoice);
 	$("#modal-discard-button").click(discardInvoice);
+	$("#modal-overwrite-button").click(function() {
+		$("#overwrite-modal").modal("hide");
+		localInvoicePresent = false;
+		saveInvoice();
+	});
 });
 
 function checkForSavedInvoices() {
@@ -129,11 +134,15 @@ function saveInvoice() {
 	console.log("Saving invoice:");
 	console.log(data);
 
+	if (localInvoicePresent) {
+		$("#overwrite-modal").modal("show");
+		return;
+	}
+
 	localStorage.setItem("invoiceData", JSON.stringify(data));
 	sessionStorage.removeItem("invoiceData"); // Saved data to local storage, so clear previous data from session storage
 	source = "local"; // Change the source since we moved where the invoice is
 	savedInvoiceToast.show();
-
 }
 
 function printInvoice() {
@@ -144,6 +153,7 @@ function printInvoice() {
 
 	sessionStorage.setItem("printInvoiceData", JSON.stringify(invoice));
 	window.location = "/print_invoice.html";
+	// window.open("/print_invoice.html", "_blank");
 }
 
 function confirmDiscardInvoice() {

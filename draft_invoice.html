@@ -19,9 +19,10 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbar">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <div class="navbar-nav">
             <a id="estimator-link" class="nav-link" href="/index.html">Estimate</a>
+            <a id="draft-invoice-link" class="nav-link active" href="/draft_invoice.html">Invoice</a>
             <!-- <a id="settings-link" class="nav-link" href="#">Settings</a> -->
             <!-- <a class="nav-link" href="#">Pricing</a>
             <a class="nav-link disabled">Disabled</a> -->
@@ -168,6 +169,27 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           <button id="modal-discard-button" type="button" class="btn btn-danger">Discard</button>
+        </div>
+      </div>
+    </div>
+  </div>
+	
+  <div class="modal fade" id="overwrite-modal" tabindex="-1" aria-labelledby="overwrite-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="overwrite-modal-label">Confirm Overwrite</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+					<p>Are you sure you wish to save this invoice?</p>
+					<p>An existing invoice will be overwritten with this one.</p>
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button id="modal-overwrite-button" type="button" class="btn btn-primary">Overwrite</button>
         </div>
       </div>
     </div>
