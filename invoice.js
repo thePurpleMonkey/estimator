@@ -13,6 +13,7 @@ var formDirty = false;
 
 // Toasts
 const savedProjectToast = new bootstrap.Toast(document.getElementById("saved-toast"));
+const deleteEmptyProjectToast = new bootstrap.Toast(document.getElementById("delete-empty-project-toast"));
 
 $(function() {
 	loadProjects();
@@ -43,8 +44,11 @@ $(function() {
 	$("#invoice-button").click(sendToInvoice);
 	$("#save-button").click(saveProject);
 	$("#project-save-button").click(modalSaveClick);
-	$("#project-name-input").keyup(modalSaveInputChanged)
+	$("#project-name-input").keyup(modalSaveInputChanged);
 	$("#navbar-save-link").click(saveProject);
+	$("#navbar-saveas-link").click(() => { $("#save-modal").modal("show"); loadProjects(); });
+	$("#navbar-delete-link").click(navbarDelete);
+	$("#confirm-delete-button").click(deleteProject);
 	$("#navbar-load-link").click(showLoadProjectModal);
 	$("#project-load-button").click(loadProject);
 
@@ -195,6 +199,7 @@ function loadProjects() {
 	}
 
 	// Populate load projects dialog
+	$("#load-project-select").empty();
 	Object.entries(saved_projects).forEach(project => {
 		console.log(project);
 		let project_name = project[0];
@@ -231,6 +236,8 @@ function clearForm() {
 	$("#revenue-input").val("");
 	$("#hours-input").val("");
 	$("#materials-list").empty();
+	$("#tax-input").val(configuration.taxRate);
+	$("#hourly-rate-input").val(configuration.hourlyRate);
 	addNewMaterial();
 	recalculateProfit();
 	formDirty = false;
@@ -372,4 +379,31 @@ function dirtyPrompt(event) {
 
 function makeFormDirty() {
 	formDirty = true;
+}
+
+function deleteCurrentProject() {
+	delete saved_projects[current_project];
+	current_project = ""
+	$("#project-name").text("New")
+
+	// Save new project list
+	localStorage.setItem("projects", JSON.stringify(saved_projects));
+	formDirty = false;
+
+	// Reload saved projects
+	loadProjects();
+}
+
+function navbarDelete() {
+	if (!current_project) {
+		deleteEmptyProjectToast.show();
+	} else {
+		$("#confirm-delete-modal").modal("show");
+	}
+}
+
+function deleteProject() {
+	deleteCurrentProject();
+	clearForm();
+	$("#confirm-delete-modal").modal("hide");
 }

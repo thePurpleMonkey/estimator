@@ -39,7 +39,7 @@
               <ul class="dropdown-menu">
                 <li><a id="navbar-save-link" class="dropdown-item" href="#">Save</a></li>
                 <li><a id="navbar-saveas-link"  class="dropdown-item" href="#">Save As</a></li>
-                <li><a id="navbar-delete-link"  class="dropdown-item" href="#">Delete</a></li>
+                <li><a id="navbar-delete-link"  class="dropdown-item text-danger" href="#">Delete</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a id="navbar-load-link" class="dropdown-item" href="#">Load</a></li>
               </ul>
@@ -221,6 +221,26 @@
       </div>
     </div>
   </div>
+  
+  <div class="modal fade" id="confirm-delete-modal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="confirmDeleteModalLabel">Delete Project</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <p>Are you sure you want to delete this project? This action cannot be undone.</p>
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button id="confirm-delete-button" type="button" class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- #endregion -->
 
   
@@ -232,6 +252,16 @@
 			<div class="d-flex">
 				<div class="toast-body">
 					Project saved.
+				</div>
+				<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+			</div>
+		</div>
+
+		<!-- Delete empty project toast -->
+		<div id="delete-empty-project-toast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+			<div class="d-flex">
+				<div class="toast-body">
+					No active project, nothing to delete.
 				</div>
 				<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
 			</div>
