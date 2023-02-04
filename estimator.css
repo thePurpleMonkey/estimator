@@ -1,0 +1,17 @@
+.row {
+	margin-bottom: 1rem;
+}
+
+.material-total-parent {
+	display: grid;
+	place-content: center;
+}
+
+#materials-container {
+	display: flex;
+	flex-direction: column;
+}
+
+#materials-total-container {
+	font-weight: bold;
+}

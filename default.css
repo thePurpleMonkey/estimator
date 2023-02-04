@@ -1,26 +1,9 @@
-.section-group {
-	/* border: 1px solid black; */
-}
-
-.row {
-	margin-bottom: 1rem;
-}
-
 .debug {
 	border: 1px solid red;
 	background-color: lightcoral;
 }
 
-.material-total-parent {
-	display: grid;
-	place-content: center;
-}
-
-#materials-container {
-	display: flex;
-	flex-direction: column;
-}
-
-#materials-total-container {
-	font-weight: bold;
+#navbar-separator {
+	height: 1.5em;
+	margin: auto 1em;
 }
