@@ -233,6 +233,7 @@ function clearForm() {
 	$("#materials-list").empty();
 	addNewMaterial();
 	recalculateProfit();
+	formDirty = false;
 }
 
 function saveNewConfigs() {
