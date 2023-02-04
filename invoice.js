@@ -9,6 +9,8 @@ var configuration = {
 	taxRate: 15,
 };
 
+var formDirty = false;
+
 // Toasts
 const savedProjectToast = new bootstrap.Toast(document.getElementById("saved-toast"));
 
@@ -17,6 +19,7 @@ $(function() {
 	loadConfiguration();
 	setDefaults();
 	$("input").change(recalculateProfit);
+	$("input").change(makeFormDirty);
 
 	$(".material-quantity").focus(function() {
 		$(this).select();
@@ -28,10 +31,11 @@ $(function() {
 		}
 	});
 
-
 	$("#settings-link").click(() => {
 		$("#configurationModal").modal("show");
-	})
+	});
+
+	addEventListener("beforeunload", dirtyPrompt, {capture: true});
 
 	// Add button click handlers
 	$("#clear-button").click(clearForm);
@@ -73,7 +77,7 @@ function addNewMaterial(name, quantity=1, cost) {
 		if (checkForEmptyMaterial()) {
 			addNewMaterial();
 		}
-	}));
+	}).change(makeFormDirty));
 	if (name) {
 
 	}
@@ -86,9 +90,9 @@ function addNewMaterial(name, quantity=1, cost) {
 		min: 0,
 		step: 1,
 		value: quantity
-	}).change(recalculateProfit)).focus(function() {
+	}).change(recalculateProfit).focus(function() {
 		$(this).select();
-	});
+	}).change(makeFormDirty));
 	row.append(div);
 
 	// Material cost
@@ -96,8 +100,9 @@ function addNewMaterial(name, quantity=1, cost) {
 	div.append($("<input>").addClass("form-control material-cost").prop({
 		type: "number",
 		min: 0,
+		step: .01,
 		value: cost
-	}).change(recalculateProfit));
+	}).change(recalculateProfit).change(makeFormDirty));
 	row.append(div);
 
 	// Material total
@@ -303,6 +308,7 @@ function saveProject() {
 	saved_projects[current_project] = project;
 	localStorage.setItem("projects", JSON.stringify(saved_projects));
 	console.log(saved_projects);
+	formDirty = false;
 	
 	// Show confirmation toast
 	savedProjectToast.show();
@@ -352,5 +358,17 @@ function loadProject() {
 	$("#tax-input").val(project.taxRate);
 
 	recalculateProfit();
+	formDirty = false;
 	$("#load-modal").modal("hide");
+}
+
+function dirtyPrompt(event) {
+	if (formDirty) {
+		event.preventDefault();
+		return event.returnValue = "Are you sure you want to leave? There are unsaved changes on this page.";
+	}
+}
+
+function makeFormDirty() {
+	formDirty = true;
 }
