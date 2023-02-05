@@ -1,6 +1,7 @@
 "use strict";
 
-var current_project;
+var project_name;
+var project;
 
 var saved_projects = new Object();
 
@@ -9,7 +10,7 @@ var configuration = {
 	taxRate: 15,
 };
 
-var formDirty = false;
+var form_dirty = false;
 
 // Toasts
 const savedProjectToast = new bootstrap.Toast(document.getElementById("saved-toast"));
@@ -124,23 +125,16 @@ function addNewMaterial(name, quantity=1, cost) {
 }
 
 function calculateMaterialsCost(e) {
-	console.log("Calculating materials cost");
-
 	let totalCost = 0;
 	let totalQuantity = 0;
 
 	$("#materials-list > div").each((index, element) => {
-		console.log(element);
 		let quantity = $(element).find(".material-quantity").val();
 		quantity = quantity.length == 0 ? 0 : parseFloat(quantity);
 		let cost = $(element).find(".material-cost").val();
 		cost = cost.length == 0 ? 0 : parseFloat(cost);
 
-		console.log(`Material quantity: ${quantity}`);
-		console.log(`Material cost: ${cost}`);
-
 		let total = quantity * cost;
-		console.log(`Material total: ${total}`);
 
 		// $(element).find(".material-total").val(total);
 		$(element).find(".material-total").text("$" + total.toFixed(2));
@@ -162,51 +156,21 @@ function recalculateProfit(e) {
 	// Calculate material cost
 	let materialsCost = calculateMaterialsCost(e);
 
-	console.log("Revenue: " + revenue);
-	console.log("Tax: " + tax);
-	console.log("Tax withheld: " + tax_withheld);
-
 	// Calculate labor cost
 	let hours = $("#hours-input").val();
 	hours = hours.length == 0 ? 0 : parseFloat(hours);
 	let hourlyRate = $("#hourly-rate-input").val();
 	hourlyRate = hourlyRate.length == 0 ? 0 : parseFloat(hourlyRate);
-	
-	console.log("Hours: " + hours);
-	console.log("Hourly rate: " + hourlyRate);
 
 	let laborCost = hours * hourlyRate;
 
-	console.log("Labor cost: " + laborCost);
-
 	// Calculate profit
 	let profit = revenue - tax_withheld - laborCost - materialsCost;
-
-	console.log("Profit: " + profit);
 
 	// Update UI
 	$("#profit").text(profit.toFixed(2));
 	$("#tax-withheld").text(tax_withheld.toFixed(2));
 	$("#labor-input").val(laborCost.toFixed(2));
-}
-
-function loadProjects() {
-	let data = JSON.parse(localStorage.getItem("projects"));
-	console.log(data);
-
-	if (data) {
-		saved_projects = data;
-	}
-
-	// Populate load projects dialog
-	$("#load-project-select").empty();
-	Object.entries(saved_projects).forEach(project => {
-		console.log(project);
-		let project_name = project[0];
-		console.log(project_name);
-		let option = $("<option>").attr("value", project_name).text(project_name);
-		$("#load-project-select").append(option);
-	});
 }
 
 function loadConfiguration() {
@@ -240,7 +204,7 @@ function clearForm() {
 	$("#hourly-rate-input").val(configuration.hourlyRate);
 	addNewMaterial();
 	recalculateProfit();
-	formDirty = false;
+	form_dirty = false;
 }
 
 function saveNewConfigs() {
@@ -263,17 +227,22 @@ function saveNewConfigs() {
 }
 
 function sendToInvoice() {
-	let estimate = serializeData();
+	if (project_name) {
+		sessionStorage.setItem("currentProject", project_name);
+		sessionStorage.removeItem("estimate");
+	} else {
+		// User has not saved estimate
+		sessionStorage.removeItem("currentProject");
+		
+		let estimate = serializeData();
+		sessionStorage.setItem("estimate", JSON.stringify(estimate));
+	}
 
-	console.log("Estimate data:");
-	console.log(estimate);
-	sessionStorage.setItem("invoiceData", JSON.stringify(estimate));
 	window.location = "/draft_invoice.html"
 }
 
-function serializeData() {
-	let estimate = new Object();
-	estimate.materials = [];
+function serializeProject() {
+	project.materials = [];
 
 	// Serialize materials
 	$("#materials-list").children().each((index, element) => {
@@ -287,48 +256,28 @@ function serializeData() {
 		console.log(material);
 
 		if (material.name) {
-			estimate.materials.push(material);
+			project.materials.push(material);
 		}
 	});
 
-	estimate.name = $("#name-input").val();
-	estimate.total = $("#revenue-input").val();
-	estimate.totalHours = $("#hours-input").val();
-	estimate.hourlyRate = $("#hourly-rate-input").val();
-	estimate.laborCost = $("#labor-input").val();
-	estimate.taxRate = $("#tax-input").val();
-	estimate.materialsCost = calculateMaterialsCost();
+	project.name = $("#name-input").val();
+	project.total = $("#revenue-input").val();
+	project.totalHours = $("#hours-input").val();
+	project.laborHourlyRate = $("#hourly-rate-input").val();
+	project.laborCost = $("#labor-input").val();
+	project.taxRate = $("#tax-input").val();
+	project.materialsCost = calculateMaterialsCost();
 
-	return estimate;
-}
-
-function saveProject() {
-	if (!current_project) {
-		// Prompt user to select a name for this project
-		$("#save-modal").modal("show");
-		return;
-	}
-
-	// Save project with given name
-	console.log("Saving project");
-	let project = serializeData();
-	console.log(project);
-	saved_projects[current_project] = project;
-	localStorage.setItem("projects", JSON.stringify(saved_projects));
-	console.log(saved_projects);
-	formDirty = false;
-	
-	// Show confirmation toast
-	savedProjectToast.show();
+	return project;
 }
 
 function modalSaveClick() {
 	let name = $("#project-name-input").val();
 	console.log(name);
 	if (name) {
-		current_project = name;
+		project_name = name;
 		saveProject();
-		$("#project-name").text(current_project);
+		$("#project-name").text(project_name);
 	}
 	$("#save-modal").modal("hide");
 }
@@ -346,11 +295,10 @@ function showLoadProjectModal() {
 }
 
 function loadProject() {
-	let project_name = $("#load-project-select").val();
+	project_name = $("#load-project-select").val();
 	console.log("Loading project: " + project_name);
 	$("#project-name").text(project_name);
-	let project = saved_projects[project_name];
-	current_project = project_name
+	project = saved_projects[project_name];
 	console.log(project);
 
 	$("#revenue-input").val(project.total);
@@ -362,40 +310,40 @@ function loadProject() {
 	addNewMaterial(); // Add a blank material at the end
 
 	$("#hours-input").val(project.totalHours);
-	$("#hourly-rate-input").val(project.hourlyRate);
+	$("#hourly-rate-input").val(project.laborHourlyRate);
 	$("#tax-input").val(project.taxRate);
 
 	recalculateProfit();
-	formDirty = false;
+	form_dirty = false;
 	$("#load-modal").modal("hide");
 }
 
 function dirtyPrompt(event) {
-	if (formDirty) {
+	if (form_dirty) {
 		event.preventDefault();
 		return event.returnValue = "Are you sure you want to leave? There are unsaved changes on this page.";
 	}
 }
 
 function makeFormDirty() {
-	formDirty = true;
+	form_dirty = true;
 }
 
 function deleteCurrentProject() {
-	delete saved_projects[current_project];
-	current_project = ""
+	delete saved_projects[project_name];
+	project_name = ""
 	$("#project-name").text("New")
 
 	// Save new project list
 	localStorage.setItem("projects", JSON.stringify(saved_projects));
-	formDirty = false;
+	form_dirty = false;
 
 	// Reload saved projects
 	loadProjects();
 }
 
 function navbarDelete() {
-	if (!current_project) {
+	if (!project_name) {
 		deleteEmptyProjectToast.show();
 	} else {
 		$("#confirm-delete-modal").modal("show");
